@@ -29,16 +29,16 @@ namespace Dexter.PeerReview
     /// <summary>
     /// Tags peer reivew comments as the type PeerReivewTag
     /// </summary>
-    public class PeerReviewTagger : ITagger<PReviewTag>, ICommentsOwner<PeerReviewComment>
+    public class PeerReviewTagger : ITagger<PReviewTag>, ICommentsOwner<PeerReviewSnapshotComment>
     {
         private ITextBuffer textBuffer;
         private ITextDocument textDocument;
-        private IList<PeerReviewComment> comments;
+        private IList<PeerReviewSnapshotComment> comments;
         private IDexterClient dexterClient;
-        private IPReviewService reviewService;
+        private IPeerReviewService reviewService;
         private const string COMMENT_DELIMITER = "dpr:";
 
-        IList<PeerReviewComment> ICommentsOwner<PeerReviewComment>.Comments
+        IList<PeerReviewSnapshotComment> ICommentsOwner<PeerReviewSnapshotComment>.Comments
         {
             get
             {
@@ -50,7 +50,7 @@ namespace Dexter.PeerReview
         /// Initializes variables and parses peer review comments for the text buffer
         /// </summary>
         public PeerReviewTagger(ITextBuffer textBuffer, ITextDocument document, IDexterClient dexterClient, 
-            IPReviewService reviewService)
+            IPeerReviewService reviewService)
         {
             this.reviewService = reviewService;
             this.dexterClient = dexterClient;
@@ -82,7 +82,7 @@ namespace Dexter.PeerReview
 
         private void ParsePReviewComments()
         {
-            comments = new List<PeerReviewComment>();
+            comments = new List<PeerReviewSnapshotComment>();
             
             foreach (var line in textBuffer.CurrentSnapshot.Lines)
             {
@@ -91,10 +91,8 @@ namespace Dexter.PeerReview
 
                 if (commentStart >= 0)
                 {
-                    comments.Add(new PeerReviewComment()
-                    {
-                        Span = new SnapshotSpan(line.Start + commentStart, line.End)
-                    });
+                    comments.Add(new PeerReviewSnapshotComment(
+                        reviewService, new SnapshotSpan(line.Start + commentStart, line.End)));
                 }
             } 
 
@@ -109,7 +107,7 @@ namespace Dexter.PeerReview
             {
                 if (comment.Span.Start >= startPoint && comment.Span.End <= endPoint)
                 {
-                    yield return new TagSpan<PReviewTag>(comment.Span, new PReviewTag());
+                    yield return new TagSpan<PReviewTag>(comment.SnapShotSpan, new PReviewTag());
                 }
             }
         }
