@@ -16,6 +16,7 @@ using Dexter.UI.Dashboard;
 using Dexter.UI.Analysis;
 using Dexter.Common.Utils;
 using Dexter.Common.Client;
+using Dexter.PeerReview;
 using Dexter.PeerReview.Utils;
 using System.Collections.Generic;
 
@@ -135,16 +136,26 @@ namespace Dexter.UI
 
             CreateAllServices();
             RegisterSolutionManager();
+            CreateReviewCommentManager();
             InitDexterClient(dexterInfoProvider);
             
                        
             base.Initialize();
         }
 
+        private void CreateReviewCommentManager()
+        {
+            PeerReviewCommentManager.Instance = new PeerReviewCommentManager(
+                DexterFileService.Instance, PeerReviewService.Instance, DexterSolutionManager.Instance,
+                new PeerReviewTaskProviderWrapper(this));
+        }
+
         private void CreateAllServices()
         {
+            DexterFileService.Instance = new DexterFileService();
             DexterHierarchyService.Instance = new DexterHierarchyService();
             PeerReviewService.Instance = new PeerReviewService(new DexterTextService());
+            
         }
 
         private void InitDexterClient(IDexterInfoProvider dexterInfoProvider)

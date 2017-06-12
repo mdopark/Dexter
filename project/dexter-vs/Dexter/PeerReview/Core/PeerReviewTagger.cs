@@ -36,7 +36,6 @@ namespace Dexter.PeerReview
         private IList<PeerReviewSnapshotComment> comments;
         private IDexterClient dexterClient;
         private IPeerReviewService reviewService;
-        private const string COMMENT_DELIMITER = "// dpr:";
 
         IList<PeerReviewSnapshotComment> ICommentsOwner<PeerReviewSnapshotComment>.Comments
         {
@@ -87,7 +86,7 @@ namespace Dexter.PeerReview
             foreach (var line in textBuffer.CurrentSnapshot.Lines)
             {
                 string text = line.GetText().ToLower();
-                int commentStart = text.IndexOf(COMMENT_DELIMITER);
+                int commentStart = text.IndexOf(PeerReviewConstants.COMMENT_DELIMITER);
 
                 if (commentStart >= 0)
                 {
