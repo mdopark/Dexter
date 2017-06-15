@@ -72,6 +72,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="PeerReviewCommentTests.cs" />
     <Compile Include="PeerReviewSnapshotCommentTest.cs" />
     <Compile Include="PReviewGlyphFactoryTest.cs" />
     <Compile Include="PReviewTaggerTest.cs" />
