@@ -33,9 +33,10 @@ namespace Dexter.PeerReview
                 ITextDocument document = null;
                 buffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
 
-                return new PeerReviewTagger(buffer, document, DexterClient.Instance, PeerReviewService.Instance) as ITagger<T>;
+                return new PeerReviewTagger(buffer, document, DexterClient.Instance, PeerReviewService.Instance, 
+                    PeerReviewCommentManager.Instance) as ITagger<T>;
             };
-            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }
 }
