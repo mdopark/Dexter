@@ -38,6 +38,7 @@ namespace Dexter.PeerReview
         private IDexterClient dexterClient;
         private IPeerReviewService reviewService;
         private IPeerReviewCommentManager commentManager;
+        private bool isCommentDirty;
 
         IList<PeerReviewSnapshotComment> ICommentsOwner<PeerReviewSnapshotComment>.Comments
         {
@@ -63,6 +64,7 @@ namespace Dexter.PeerReview
             textDocument = document;
             textDocument.FileActionOccurred += FileActionOccurred;
 
+            isCommentDirty = false;
             ParsePReviewComments();
         }
 
@@ -73,7 +75,13 @@ namespace Dexter.PeerReview
                 if (dexterClient.IsStandAloneMode())
                     return;
 
-                dexterClient.SendAnalysisResult(reviewService.ConvertToDexterResult(textDocument, comments));
+                if (isCommentDirty)
+                {
+                    dexterClient.SendAnalysisResult(reviewService.ConvertToDexterResult(textDocument, comments));
+                    dexterClient.SendSourceCode(reviewService.ConverToSourceCodeJsonFormat(
+                        textDocument.FilePath, textBuffer.CurrentSnapshot.GetText()));
+                    isCommentDirty = false;
+                }
             }
         }
 
@@ -105,6 +113,7 @@ namespace Dexter.PeerReview
                 var baseComments = comments.Cast<PeerReviewComment>().ToList();
 
                 commentManager.UpdateReviewCommentOfOneDocument(textDocument.FilePath, baseComments);
+                isCommentDirty = true;
             }
         }
 

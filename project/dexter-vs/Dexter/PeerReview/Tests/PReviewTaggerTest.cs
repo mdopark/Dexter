@@ -80,41 +80,6 @@ namespace Dexter.PeerReview.Tests
             Assert.AreEqual(tagger, properties.GetProperty(PeerReviewConstants.COMMENT_OWNER));
         }
 
-        [Test]
-        public void FileActionOccurred_sendReviewCommentsToServer_OnFileSavedEvent()
-        {
-            // given 
-            var comments = new List<PeerReviewComment>();
-            comments.Add(new PeerReviewComment());
-            reviewServiceMock.Setup(service => service.ConvertToDexterResult(
-                It.IsAny<ITextDocument>(), It.IsAny<IList<PeerReviewSnapshotComment>>())).Returns(new DexterResult());
-
-            // when
-            textDocumentMock.Raise(doc => doc.FileActionOccurred += null,
-                new TextDocumentFileActionEventArgs(@"c:\test.cs", new DateTime(), FileActionTypes.ContentSavedToDisk));
-
-            // then
-            dexterClientMock.Verify(client => client.SendAnalysisResult(It.IsAny<DexterResult>()));
-        }
-
-        [Test]
-        public void FileActionOccurred_doNotSendReviewCommentsToServer_OnFileSavedEvent_IfStandAloneMode()
-        {
-            // given 
-            var comments = new List<PeerReviewComment>();
-            comments.Add(new PeerReviewComment());
-            reviewServiceMock.Setup(service => service.ConvertToDexterResult(
-                It.IsAny<ITextDocument>(), It.IsAny<IList<PeerReviewSnapshotComment>>())).Returns(new DexterResult());
-            dexterClientMock.Setup(client => client.IsStandAloneMode()).Returns(true);
-
-            // when
-            textDocumentMock.Raise(doc => doc.FileActionOccurred += null,
-                new TextDocumentFileActionEventArgs(@"c:\test.cs", new DateTime(), FileActionTypes.ContentSavedToDisk));
-
-            // then
-            dexterClientMock.Verify(client => client.SendAnalysisResult(It.IsAny<DexterResult>()), Times.Never);
-        }
-
         private NormalizedSnapshotSpanCollection createTestSnapshotSpansWithOnelineComment(string comment)
         {
             textSnapshotMock.Setup(snapshot => snapshot.Length).Returns(comment.Length);
