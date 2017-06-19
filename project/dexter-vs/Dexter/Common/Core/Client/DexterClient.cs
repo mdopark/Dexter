@@ -47,17 +47,12 @@ namespace Dexter.Common.Client
             this.dexterInfoProvider = dexterInfoProvider;
         }
 
-        public string SourceCode(string modulePath, string fileName)
-        {
-            return @"";
-        }
-
         public Task SendAnalysisResult(string resultJson)
         {
             throw new NotImplementedException();
         }
 
-        public Task StoreSourceCodeCharSequence(long snapshotId, long groupId, string modulePath, string fileName, string sourcecode)
+        public Task SendSourceCode(SourceCodeJsonFormat source)
         {
             throw new NotImplementedException();
         }
@@ -95,22 +90,5 @@ namespace Dexter.Common.Client
     {
         [JsonProperty(PropertyName = "result")]
         public string Result { get; set; }
-    }
-
-    /// <summary>
-    /// JSON Container of source codes
-    /// </summary>
-    public class SourceCodeJsonFormat
-    {
-        [JsonProperty("snapshotId")]
-        public long SnapshotId { get; set; }
-        [JsonProperty("gouprId")]
-        public long GroupId { get; set; }
-        [JsonProperty("modulePath")]
-        public string ModulePath { get; set; }
-        [JsonProperty("fileName")]
-        public string FileName { get; set; }
-        [JsonProperty("sourceCode")]
-        public string SourceCode { get; set; }
     }
 }
